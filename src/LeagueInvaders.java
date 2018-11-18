@@ -3,8 +3,9 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 
 public class LeagueInvaders {
-	final int width = 500;
-	final int height = 800;
+	final static int width = 500;
+	final static int height = 800;
+	GamePanel gamepanel;
 	
 	JFrame window;
 	
@@ -15,14 +16,18 @@ public class LeagueInvaders {
 	
 	public LeagueInvaders() {
 		window = new JFrame();
+		gamepanel = new GamePanel();
 	}
 	
 	void setup() {
-		window.add(new GamePanel());
+		window.add(gamepanel);
+		window.addKeyListener(gamepanel);
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setPreferredSize(new Dimension(width, height));
 		window.pack();
+		
+		gamepanel.startGame();
 	}
 	
 }
