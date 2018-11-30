@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -17,8 +18,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	int currentState = MENU_STATE;
 	Font titleFont;
 	Font normalFont;
-	RocketShip rocketShip = new RocketShip(250, 700, 50, 50);
+	RocketShip rocketShip = new RocketShip(225, 700, 50, 50);
 	ObjectManager objectManager = new ObjectManager(rocketShip);
+	public static BufferedImage alienImg;
+	public static BufferedImage rocketImg;
+	public static BufferedImage bulletImg;
+	public static BufferedImage spaceImg;
 
 	public GamePanel() {
 		timer = new Timer(1000 / 60, this);
@@ -47,7 +52,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	}
 
 	void updateGameState() {
-		objectManager.update();
+		if (!rocketShip.isAlive) {
+			currentState = END_STATE;
+		} else {
+			objectManager.update();
+			objectManager.manageEnemies();
+			objectManager.checkCollision();
+			objectManager.purgeObjects();
+		}
 	}
 
 	void updateEndState() {
@@ -102,30 +114,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (currentState == MENU_STATE) {
 				currentState = GAME_STATE;
-			} else if (currentState == GAME_STATE) {
-				currentState = END_STATE;
 			} else if (currentState == END_STATE) {
 				currentState = MENU_STATE;
+				rocketShip = new RocketShip(225, 700, 50, 50);
+				objectManager = new ObjectManager(rocketShip);
 			}
 		}
-		
-		if (currentState==GAME_STATE) {
-			if (e.getKeyCode()==KeyEvent.VK_UP) {
+
+		if (currentState == GAME_STATE) {
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				rocketShip.up = true;
-			}
-			else if (e.getKeyCode()==KeyEvent.VK_DOWN) {
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 				rocketShip.down = true;
-			}
-			else if (e.getKeyCode()==KeyEvent.VK_RIGHT) {
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 				rocketShip.right = true;
-			}
-			else if (e.getKeyCode()==KeyEvent.VK_LEFT) {
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 				rocketShip.left = true;
 			}
 		}
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			Projectile projectile = new Projectile(rocketShip.x+rocketShip.width/2-5, rocketShip.y, 10, 10);
+			Projectile projectile = new Projectile(rocketShip.x + rocketShip.width / 2 - 5, rocketShip.y, 10, 10);
 			objectManager.addProjectile(projectile);
 		}
 	}
@@ -133,16 +142,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getKeyCode()==KeyEvent.VK_UP) {
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
 			rocketShip.up = false;
-		}
-		else if (e.getKeyCode()==KeyEvent.VK_DOWN) {
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 			rocketShip.down = false;
-		}
-		else if (e.getKeyCode()==KeyEvent.VK_RIGHT) {
+		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			rocketShip.right = false;
-		}
-		else if (e.getKeyCode()==KeyEvent.VK_LEFT) {
+		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			rocketShip.left = false;
 		}
 	}
